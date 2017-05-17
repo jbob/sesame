@@ -1,0 +1,41 @@
+% layout 'default';
+
+% my $tfa_secret = stash 'tfa_secret';
+% my $qr_url = stash 'qr_url';
+% if (not $tfa_secret) {
+<form method="POST" class="form-horizontal">
+  <div class="form-group form-group-lg">
+    %= label_for username => 'Username', class => 'control-label col-sm-4'
+    <div class="col-sm-5">
+      %= text_field 'username', id => 'username', class => 'form-control'
+    </div>
+  </div>
+  <div class="form-group form-group-lg">
+    %= label_for password1 => 'Password', class => 'control-label col-sm-4'
+    <div class="col-sm-5">
+      %= password_field 'password1', id => 'password1', class => 'form-control'
+    </div>
+  </div>
+  <div class="form-group form-group-lg">
+    %= label_for password2 => 'Repeat', class => 'control-label col-sm-4'
+    <div class="col-sm-5">
+      %= password_field 'password2', id => 'password2', class => 'form-control'
+    </div>
+  </div>
+  <div class="from-group form-group-lg">
+    <div class="col-sm-offset-4 col-sm-5">
+      %= submit_button 'Register', class => 'btn btn-default'
+    </div>
+  </div>
+</form>
+% } else {
+    <h3>Thanks for registering. Scan the following with your 2FA app or use
+    this code (and make a backup):</h3>
+    <div>
+      <code><%= $tfa_secret %></code>
+    </div>
+    <div>
+      <img src="<%= $qr_url %>" />
+    </div>
+    %= link_to 'Login' => '/logins', class => 'btn btn-default'
+% }

@@ -1,0 +1,37 @@
+% layout 'default';
+% $logins = stash 'logins';
+
+<h1>Hello <%= session 'username' %></h1>
+% if(@$logins) {
+    <div class="list-group">
+    % for my $login (@$logins) {
+      <div class="list-group-item">
+        <span class="badge alert-danger">
+          <a href="<%= url_for 'logins/delete/'.$login->id %>" class="btn">
+            <span class="glyphicon glyphicon-trash" />
+          </a>
+        </span>
+        <h4 class="list-group-item-heading"><%= $login->page %></h4>
+        <p class="list-group-item-text">
+          <h5><%= $login->comment %></h5>
+          <div id="stars-<%= $login->id%>">
+            <kbd>************</kbd>
+            <kbd>************</kbd>
+          </div>
+          <div id="real-<%= $login->id%>" style="display:none">
+            <kbd><%= $login->login %></kbd>
+            <kbd><%= $login->password %></kbd>
+          </div>
+        </p>
+      </div>
+    % }
+    </div>
+    <div>
+      %= link_to 'Create new one!' => 'logins/new', class => 'btn btn-default'
+    </div>
+% } else {
+  <h4>No saved logins yet :-(</h4>
+  <div>
+    %= link_to 'Create one!' => 'logins/new', class => 'btn btn-default'
+  </div>
+% }
