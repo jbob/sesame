@@ -22,7 +22,7 @@
       %= password_field 'password2', id => 'password2', class => 'form-control'
     </div>
   </div>
-  <div class="from-group form-group-lg">
+  <div class="form-group form-group-lg">
     <div class="col-sm-offset-4 col-sm-5">
       %= submit_button 'Register', class => 'btn btn-default'
     </div>
