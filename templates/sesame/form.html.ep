@@ -1,31 +1,31 @@
 % layout 'default';
 
 %= form_for logins => (method => 'POST'), class => 'form-horizontal',  => begin
-  <div class="form-group form-group-lg">
+  <div class="form-group form-group">
     %= label_for page => 'Page', class => 'control-label col-sm-4'
     <div class="col-sm-5">
       %= text_field 'page', id => 'page', class => 'form-control'
     </div>
   </div>
-  <div class="form-group form-group-lg">
+  <div class="form-group form-group">
     %= label_for login => 'Login', class => 'control-label col-sm-4'
     <div class="col-sm-5">
       %= text_field 'login', id => 'login', class => 'form-control'
     </div>
   </div>
-  <div class="form-group form-group-lg">
+  <div class="form-group form-group">
     %= label_for password => 'Password', class => 'control-label col-sm-4'
     <div class="col-sm-5">
       %= text_field 'password', id => 'password', class => 'form-control'
     </div>
   </div>
-  <div class="form-group form-group-lg">
+  <div class="form-group form-group">
     %= label_for comment => 'Comment', class => 'control-label col-sm-4'
     <div class="col-sm-5">
       %= text_field 'comment', id => 'comment', class => 'form-control'
     </div>
   </div>
-  <div class="form-group form-group-lg">
+  <div class="form-group form-group">
     <div class="col-sm-offset-4 col-sm-5">
       %= submit_button 'Save', class => 'btn btn-default'
     </div>
