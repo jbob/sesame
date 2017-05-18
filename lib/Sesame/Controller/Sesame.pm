@@ -90,9 +90,7 @@ sub logins_list {
     my $key      = $self->session('key');
     my $cipher   = Crypt::CBC->new( -key => $key, -cipher => 'Blowfish');
 
-        warn "CALLED1";
     $self->users->search({ username => $username })->single(sub {
-        warn "CALLED";
         my ($users, $err, $user) = @_;
         $self->reply->exception($err) if $err;
         my $logins = $user->logins;
@@ -104,7 +102,6 @@ sub logins_list {
         }
         $self->render(logins => $logins);
     });
-        warn "CALLED2";
     $self->render_later;
 }
 
