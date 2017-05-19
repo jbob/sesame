@@ -19,6 +19,7 @@ sub startup {
     $r->get('/')->to('sesame#index')->name('index');
     $r->any('/login')->to('sesame#login');
     $r->any('/register')->to('sesame#register');
+    $r->get('/about)')->to('sesame#about');
     my $l = $r->under(sub {
         my $self = shift;
         return $self->auth;

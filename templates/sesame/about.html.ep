@@ -1,0 +1,16 @@
+% layout 'default';
+
+<div class="jumbotron">
+  <h2>Proudly made with:</h2>
+  <div class="row">
+  <ul>
+      <li><a href="https://www.perl.org/">Perl</a></li>
+      <li><a href="http://mojolicio.us">Mojolicous</a></li>
+      <li><a href="https://www.mongodb.org/">MongoDB</a></li>
+      <li><a href="http://www.vim.org/">Vim</a></li>
+  </ul>
+  </div>
+  <div class="row">
+      <p><a class="btn btn-default" href="https://github.com/jbob/sesame">Github repository</a></p>
+  </div>
+</div>

@@ -14,11 +14,11 @@
         <h4 class="list-group-item-heading"><%= $login->page %></h4>
         <p class="list-group-item-text">
           <h5><%= $login->comment %></h5>
-          <div id="stars-<%= $login->id%>">
+          <div id="stars-<%= $login->id%>" style="display:non">
             <kbd>************</kbd>
             <kbd>************</kbd>
           </div>
-          <div id="real-<%= $login->id%>" style="display:none">
+          <div id="real-<%= $login->id%>">
             <kbd><%= $login->login %></kbd>
             <kbd><%= $login->password %></kbd>
           </div>

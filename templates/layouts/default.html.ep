@@ -18,53 +18,56 @@
     <%= content_for 'head' =%>
   </head>
   <body>
-  <div class="navbar navbar-default">
-   <div class="container-fluid">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#mynavbar">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <span class="navbar-brand"><%= config 'title' %></span>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#mynavbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <span class="navbar-brand"><%= config 'title' %></span>
+      </div>
       <div class="collapse navbar-collapse" id="mynavbar">
-       <ul class="nav navbar-nav">
-          % if(session 'logged_in') {
-          <li><a href="<%= url_for '/logins' %>">My Logins</a></li>
-          <li><a href="<%= url_for '/logout' %>">Logout</a></li>
-        % } else {
-          <li><a href="<%= url_for '/logins' %>">Login</a></li>
-          <li><a href="<%= url_for '/register' %>">Register</a></li>
-        % }
-       </ul>
+        <ul class="nav navbar-nav">
+         % if(session 'logged_in') {
+           <li><a href="<%= url_for 'logins' %>">My Logins</a></li>
+           <li><a href="<%= url_for 'logout' %>">Logout</a></li>
+         % } else {
+           <li><a href="<%= url_for 'logins' %>">Login</a></li>
+           <li><a href="<%= url_for 'register' %>">Register</a></li>
+         % }
+           <li><a href="<%= url_for 'about' %>">About</a></li>
+        </ul>
       </div>
     </div>
-   </div>
+  </nav>
+
+  <div class="container">
+    % if(my $msg = flash 'msg') {
+    %   my $type = (flash 'type') // 'info';
+        <div class="alert alert-<%= $type %>" role="alert"><%= $msg %></div>
+    % }
+    <%= content =%>
   </div>
 
-    <div class="container">
-      % if(my $msg = flash 'msg') {
-      %   my $type = (flash 'type') // 'info';
-          <div class="alert alert-<%= $type %>" role="alert"><%= $msg %></div>
-      % }
-      <%= content =%>
-    </div>
-
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <script>
-      $("div[id^='stars-']").on('click', function() {
-          var id = this.id;
-          $(this).hide();
-          $("div#real-"+this.id.replace(/^stars-/,'')).show();
-      });
-      $("div[id^='real-']").on('click', function() {
-          var id = this.id;
-          $(this).hide();
-          $("div#stars-"+this.id.replace(/^real-/,'')).show();
-      });
-    </script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script>
+    $("div[id^='stars-']").on('click', function() {
+        var id = this.id;
+        $(this).hide();
+        $("div#real-"+this.id.replace(/^stars-/,'')).show();
+    });
+    $("div[id^='real-']").on('click', function() {
+        var id = this.id;
+        $(this).hide();
+        $("div#stars-"+this.id.replace(/^real-/,'')).show();
+    });
+    $("div[id^='real-']").hide();
+    $("div[id^='stars-']").show();
+  </script>
   </body>
 </html>
 

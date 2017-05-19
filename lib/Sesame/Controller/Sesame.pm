@@ -69,7 +69,7 @@ sub register {
         } else {
             my $password = sha512_hex sha512_hex encode('UTF-8', $username . $password1);
             my $tfa_secret = encode_base32(entropy_source->get_bits(50*8));
-            my $url = sprintf('otpauth://totp/%s?secret=%s', 'Sesame', $tfa_secret);
+            my $url = sprintf('otpauth://totp/%s?secret=%s', "Sesame-$username", $tfa_secret);
             my $qr_url = sprintf('https://chart.googleapis.com/chart?chs=400x400&chld=M|0&cht=qr&chl=%s', uri_escape($url));
             $self->users->create({ username => $username,
                                    password => $password,
