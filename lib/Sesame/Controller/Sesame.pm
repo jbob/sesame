@@ -22,7 +22,7 @@ sub login {
         $self->session(tfa_token => $tfa_token);
         $self->session(key => sha512_hex encode('UTF-8', $username . $password));
         $self->session(password => sha512_hex $self->session('key'));
-        $self->redirect_to($self->session('target') // '/');
+        return $self->redirect_to($self->session('target') // '/');
     } else {
         if ($self->req->method eq 'POST') {
             $self->flash(msg => 'Please fill the complete form', type => 'danger');
@@ -37,7 +37,7 @@ sub logout {
     $self->session('username' => '');
     $self->session('password' => '');
     $self->session(key => '');
-    $self->redirect_to('/');
+    return $self->redirect_to('/');
 }
 
 sub register {
@@ -65,7 +65,7 @@ sub register {
         $self->reply->exception($err) if $err;
         if ($user) {
             $self->flash(msg => 'Username already taken', type => 'danger');
-            $self->redirect_to('register');
+            return $self->redirect_to('register');
         } else {
             my $password = sha512_hex sha512_hex encode('UTF-8', $username . $password1);
             my $tfa_secret = encode_base32(entropy_source->get_bits(50*8));
