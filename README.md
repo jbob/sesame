@@ -16,8 +16,8 @@ in action at [https://sesame.markusko.ch](https://sesame.markusko.ch)
 Simply clone or download the the repository, adjust the sesame.conf file and
 execute either:
 
-    $ morbo script/pastr (for development), or
-    $ hypnotoad script/pastr (for production)
+    $ morbo script/sesame (for development), or
+    $ hypnotoad script/sesame (for production)
 
 The app will then listen on either 127.0.0.1:3000 (development) or 0.0.0.0:8012
 (production).
@@ -25,6 +25,6 @@ The app will then listen on either 127.0.0.1:3000 (development) or 0.0.0.0:8012
 To access your app via a reverse proxy, create a minimal VHost like this:
 
     <VirtualHost *:80>
-        ServerName pastr.markusko.ch
+        ServerName sesame.markusko.ch
         ProxyPass / http://127.0.0.1:8012/
     </VirtualHost>
