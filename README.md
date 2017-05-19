@@ -24,7 +24,7 @@ The app will then listen on either 127.0.0.1:3000 (development) or 0.0.0.0:8012
 
 To access your app via a reverse proxy, create a minimal VHost like this:
 
-    <VirtualHost *:80>
+    <VirtualHost *:443>
         ServerName sesame.markusko.ch
         ProxyPass / http://127.0.0.1:8012/
     </VirtualHost>
