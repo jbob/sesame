@@ -32,13 +32,21 @@
       <div class="collapse navbar-collapse" id="mynavbar">
         <ul class="nav navbar-nav">
          % if(session 'logged_in') {
-           <li><a href="<%= url_for 'logins' %>">My Logins</a></li>
+           <li class="<%= 'active' if stash->{action} eq 'logins_list' %>">
+               <a href="<%= url_for 'logins' %>">My Logins</a>
+           </li>
            <li><a href="<%= url_for 'logout' %>">Logout</a></li>
          % } else {
-           <li><a href="<%= url_for 'logins' %>">Login</a></li>
-           <li><a href="<%= url_for 'register' %>">Register</a></li>
+           <li class="<%= 'active' if stash->{action} eq 'login' %>">
+               <a href="<%= url_for 'logins' %>">Login</a>
+           </li>
+           <li class="<%= 'active' if stash->{action} eq 'register' %>">
+               <a href="<%= url_for 'register' %>">Register</a>
+           </li>
          % }
-           <li><a href="<%= url_for 'about' %>">About</a></li>
+           <li class="<%= 'active' if stash->{action} eq 'about' %>">
+               <a href="<%= url_for 'about' %>">About</a>
+           </li>
         </ul>
       </div>
     </div>
