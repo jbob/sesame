@@ -14,12 +14,14 @@
         <h4 class="list-group-item-heading"><%= $login->page %></h4>
         <p class="list-group-item-text">
           <h5><%= $login->comment %></h5>
-          <div id="stars-<%= $login->id%>" style="display:non">
+          <div id="stars-<%= $login->id %>" style="display:none">
             <kbd>************</kbd>
+            <button class="btn btn-default btn-xs" id="cp-usr-<%= $login->id %>">Copy Username to clipboard</button><br />
             <kbd>************</kbd>
+            <button class="btn btn-default btn-xs" id="cp-pwd-<%= $login->id %>">Copy Password to clipboard</button>
           </div>
-          <div id="real-<%= $login->id%>">
-            <kbd><%= $login->login %></kbd>
+          <div id="real-<%= $login->id %>">
+            <kbd><%= $login->login %></kbd><br />
             <kbd><%= $login->password %></kbd>
           </div>
         </p>

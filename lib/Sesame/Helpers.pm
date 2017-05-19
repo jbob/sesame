@@ -51,16 +51,12 @@ sub register {
         #            if ($correct_token eq $tfa_token) {
         #                $con->session('logged_in' => 1);
         #                $con->session(password => '');
-        #                #return 1;
-        #                sleep 3;
-        #                warn "Success!";
         #                $result = 1;
         #            } else {
         #                $con->flash(msg => 'Invalid login', type => 'danger');
         #                $con->session(logged_in => 0);
         #                $con->session(target => $con->req->url->to_abs->path);
         #                $con->redirect_to('/login');
-        #                #return 0;
         #                $result = 0;
         #            }
         #        } else {
@@ -68,14 +64,12 @@ sub register {
         #            $con->session(logged_in => 0);
         #            $con->session(target => $con->req->url->to_abs->path);
         #            $con->redirect_to('/login');
-        #            #return 0;
         #            $result = 0;
         #        }
         #    });
         #})->wait;
         #return $result;
         my $user = $app->users->search({ username => $con->session('username'), password => $con->session('password')})->single;
-        warn "ZZZ".$user;
         if ($user) {
             my $tfa_secret = decode_base32 $user->tfa_secret;
             my $correct_token = make_token_6(Authen::OATH->new->totp($tfa_secret));
