@@ -33,19 +33,21 @@
         <ul class="nav navbar-nav">
          % if(session 'logged_in') {
            <li class="<%= 'active' if stash->{action} eq 'logins_list' %>">
-               <a href="<%= url_for 'logins' %>">My Logins</a>
+               %= link_to 'My Logins' => 'logins'
            </li>
-           <li><a href="<%= url_for 'logout' %>">Logout</a></li>
+           <li>
+               %= link_to 'Logout' => 'logout'
+           </li>
          % } else {
            <li class="<%= 'active' if stash->{action} eq 'login' %>">
-               <a href="<%= url_for 'logins' %>">Login</a>
+               %= link_to 'Login' => 'logins'
            </li>
            <li class="<%= 'active' if stash->{action} eq 'register' %>">
-               <a href="<%= url_for 'register' %>">Register</a>
+               %= link_to 'Register' => 'register'
            </li>
          % }
            <li class="<%= 'active' if stash->{action} eq 'about' %>">
-               <a href="<%= url_for 'about' %>">About</a>
+               %= link_to 'About' => 'about'
            </li>
         </ul>
       </div>

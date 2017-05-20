@@ -4,13 +4,13 @@
   <h2>Proudly made with:</h2>
   <div class="row">
   <ul>
-      <li><a href="https://www.perl.org/">Perl</a></li>
-      <li><a href="http://mojolicio.us">Mojolicous</a></li>
-      <li><a href="https://www.mongodb.org/">MongoDB</a></li>
-      <li><a href="http://www.vim.org/">Vim</a></li>
+      <li><%= link_to 'Perl' => 'https://www.perl.org' %></li>
+      <li><%= link_to 'Mojolicious' => 'http://mojolicio.us' %></li>
+      <li><%= link_to 'MongoDB' => 'https://www.mongodb.org' %></li>
+      <li><%= link_to 'Vim' => 'http://www.vim.org' %></li>
   </ul>
   </div>
   <div class="row">
-      <p><a class="btn btn-default" href="https://github.com/jbob/sesame">Github repository</a></p>
+      <p><%= link_to 'Github repository' => 'https://github.com/jbob/sesame', class => 'btn btn-default' %></p>
   </div>
 </div>
