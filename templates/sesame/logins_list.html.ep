@@ -16,9 +16,9 @@
           <h5><%= $login->comment %></h5>
           <div id="stars-<%= $login->id %>" style="display:none">
             <kbd>************</kbd>
-            <button class="btn btn-default btn-xs" id="cp-usr-<%= $login->id %>">Copy Username to clipboard</button><br />
+            <button class="btn btn-default btn-xs" id="cp-usr-<%= $login->id %>">Copy username to clipboard</button><br />
             <kbd>************</kbd>
-            <button class="btn btn-default btn-xs" id="cp-pwd-<%= $login->id %>">Copy Password to clipboard</button>
+            <button class="btn btn-default btn-xs" id="cp-pwd-<%= $login->id %>">Copy password to clipboard</button>
           </div>
           <div id="real-<%= $login->id %>">
             <kbd><%= $login->login %></kbd><br />
