@@ -25,19 +25,19 @@ sub register {
     $app->helper(logins => sub { $_[0]->app->model->collection('login') } );
 
     $app->helper(auth => sub {
-        my $con = shift;
-        return 1 if $con->session
-                  and $con->session('logged_in')
-                  and $con->session('logged_in') == 1;
-        if (not $con->session('username')) {
-            $con->session(logged_in => 0);
-            $con->session(target => $con->req->url->to_abs->path);
-            $con->redirect_to('/login');
+        my $self = shift;
+        return 1 if $self->session
+                  and $self->session('logged_in')
+                  and $self->session('logged_in') == 1;
+        if (not $self->session('username')) {
+            $self->session(logged_in => 0);
+            $self->session(target => $self->req->url->to_abs->path);
+            $self->redirect_to('/login');
             return 0;
         }
 
-        my $username = $con->session('username');
-        my $password = $con->session('password');
+        my $username = $self->session('username');
+        my $password = $self->session('password');
         #my $result = 0;
         #$app->delay(sub {
         #    $app->users->search({ username => $username, password => $password })->single(sub {
@@ -47,49 +47,49 @@ sub register {
         #            #my $tfa_secret = decode_base32 $doc->tfa_secret;
         #            my $tfa_secret = decode_base32 $user->tfa_secret;
         #            my $correct_token = make_token_6(Authen::OATH->new->totp($tfa_secret));
-        #            my $tfa_token = $con->session('tfa_token');
+        #            my $tfa_token = $self->session('tfa_token');
         #            if ($correct_token eq $tfa_token) {
-        #                $con->session('logged_in' => 1);
-        #                $con->session(password => '');
+        #                $self->session('logged_in' => 1);
+        #                $self->session(password => '');
         #                $result = 1;
         #            } else {
-        #                $con->flash(msg => 'Invalid login', type => 'danger');
-        #                $con->session(logged_in => 0);
-        #                $con->session(target => $con->req->url->to_abs->path);
-        #                $con->redirect_to('/login');
+        #                $self->flash(msg => 'Invalid login', type => 'danger');
+        #                $self->session(logged_in => 0);
+        #                $self->session(target => $self->req->url->to_abs->path);
+        #                $self->redirect_to('/login');
         #                $result = 0;
         #            }
         #        } else {
-        #            $con->flash(msg => 'Invalid login', type => 'danger');
-        #            $con->session(logged_in => 0);
-        #            $con->session(target => $con->req->url->to_abs->path);
-        #            $con->redirect_to('/login');
+        #            $self->flash(msg => 'Invalid login', type => 'danger');
+        #            $self->session(logged_in => 0);
+        #            $self->session(target => $self->req->url->to_abs->path);
+        #            $self->redirect_to('/login');
         #            $result = 0;
         #        }
         #    });
-        #})->wait;
+        #});
         #return $result;
-        my $user = $app->users->search({ username => $con->session('username'), password => $con->session('password')})->single;
+        my $user = $app->users->search({ username => $username, password => $password })->single;
         if ($user) {
             my $tfa_secret = decode_base32 $user->tfa_secret;
             my $correct_token = make_token_6(Authen::OATH->new->totp($tfa_secret));
-            my $tfa_token = $con->session('tfa_token');
+            my $tfa_token = $self->session('tfa_token');
             if ($correct_token eq $tfa_token) {
-                $con->session('logged_in' => 1);
-                $con->session(password => '');
+                $self->session('logged_in' => 1);
+                $self->session(password => '');
                 return 1;
             } else {
-                $con->flash(msg => 'Invalid login', type => 'danger');
-                $con->session(logged_in => 0);
-                $con->session(target => $con->req->url->to_abs->path);
-                $con->redirect_to('/login');
+                $self->flash(msg => 'Invalid login', type => 'danger');
+                $self->session(logged_in => 0);
+                $self->session(target => $self->req->url->to_abs->path);
+                $self->redirect_to('/login');
                 return 0;
             }
         } else {
-            $con->flash(msg => 'Invalid login', type => 'danger');
-            $con->session(logged_in => 0);
-            $con->session(target => $con->req->url->to_abs->path);
-            $con->redirect_to('/login');
+            $self->flash(msg => 'Invalid login', type => 'danger');
+            $self->session(logged_in => 0);
+            $self->session(target => $self->req->url->to_abs->path);
+            $self->redirect_to('/login');
             return 0;
         }
     });
