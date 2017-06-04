@@ -6,7 +6,6 @@ use Data::Entropy qw(entropy_source);
 use Convert::Base32;
 use URI::Escape;
 use Mango::BSON 'bson_oid';
-use Crypt::CBC;
 use Encode qw(decode encode);
 
 sub login {
