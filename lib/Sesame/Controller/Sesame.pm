@@ -36,7 +36,7 @@ sub logout {
     $self->session(username => '');
     $self->session(password => '');
     $self->session(key => '');
-    return $self->redirect_to('/');
+    return $self->redirect_to('index');
 }
 
 sub register {
@@ -113,13 +113,41 @@ sub changepw {
             $user->password(sha512_hex sha512_hex encode('UTF8', $username.$new_password1));
             $user->key($self->encrypt($user->password, $self->session('key')));
             $user->save;
-            return $self->redirect_to('/logout');
+            return $self->redirect_to('logout');
         } else {
             $self->flash(msg => 'Old password is incorrect', type => 'danger');
             return $self->redirect_to('changepw');
         }
 
     });
+    $self->render_later;
+}
+
+sub deleteacc {
+    my $self = shift;
+
+    if ($self->req->method eq 'GET') {
+        return $self->render;
+    }
+
+    my $confirmation = $self->param('confirmation') // '';
+    if ($confirmation eq 'YES') {
+        my $username = $self->session('username');
+        $self->users->search({ username => $username })->single(sub {
+            my ($users, $err, $user) = @_;
+            $self->reply->exception($err) if $err;
+            my $logins = $user->logins;
+            for my $login (@$logins) {
+                $login->remove;
+            }
+            $user->remove;
+            $self->redirect_to('logout');
+        });
+    } else {
+        $self->redirect_to('account');
+    }
+
+
     $self->render_later;
 }
 

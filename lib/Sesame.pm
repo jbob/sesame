@@ -33,6 +33,7 @@ sub startup {
     $l->get('/logins/:id')->to('sesame#show');
     $l->get('/account')->to('sesame#account');
     $l->any('/account/changepw')->to('sesame#changepw');
+    $l->any('/account/delete')->to('sesame#deleteacc');
 }
 
 1;
