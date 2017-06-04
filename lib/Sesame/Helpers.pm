@@ -5,6 +5,8 @@ use Mojo::IOLoop;
 
 use Authen::OATH;
 use Convert::Base32;
+use Encode qw(decode encode);
+use Crypt::CBC;
 
 sub make_token_6 {
     my $token = shift;
@@ -24,6 +26,24 @@ sub register {
     $app->helper(users => sub { $_[0]->app->model->collection('user') } );
     $app->helper(logins => sub { $_[0]->app->model->collection('login') } );
 
+    $app->helper(encrypt => sub {
+        my $self = shift;
+        my $key  = shift;
+        my $text = shift;
+
+        my $cipher = Crypt::CBC->new(-key => $key, -cipher => 'Blowfish');
+        return $cipher->encrypt_hex($text);
+    });
+
+    $app->helper(decrypt => sub {
+        my $self = shift;
+        my $key  = shift;
+        my $text = shift;
+
+        my $cipher = Crypt::CBC->new(-key => $key, -cipher => 'Blowfish');
+        return $cipher->decrypt_hex($text);
+    });
+
     $app->helper(auth => sub {
         my $self = shift;
         return 1 if $self->session
@@ -38,45 +58,17 @@ sub register {
 
         my $username = $self->session('username');
         my $password = $self->session('password');
-        #my $result = 0;
-        #$app->delay(sub {
-        #    $app->users->search({ username => $username, password => $password })->single(sub {
-        #        my ($users, $err, $user) = @_;
-        #        $app->reply->exception($err) if $err;
-        #        if ($user) {
-        #            #my $tfa_secret = decode_base32 $doc->tfa_secret;
-        #            my $tfa_secret = decode_base32 $user->tfa_secret;
-        #            my $correct_token = make_token_6(Authen::OATH->new->totp($tfa_secret));
-        #            my $tfa_token = $self->session('tfa_token');
-        #            if ($correct_token eq $tfa_token) {
-        #                $self->session('logged_in' => 1);
-        #                $self->session(password => '');
-        #                $result = 1;
-        #            } else {
-        #                $self->flash(msg => 'Invalid login', type => 'danger');
-        #                $self->session(logged_in => 0);
-        #                $self->session(target => $self->req->url->to_abs->path);
-        #                $self->redirect_to('/login');
-        #                $result = 0;
-        #            }
-        #        } else {
-        #            $self->flash(msg => 'Invalid login', type => 'danger');
-        #            $self->session(logged_in => 0);
-        #            $self->session(target => $self->req->url->to_abs->path);
-        #            $self->redirect_to('/login');
-        #            $result = 0;
-        #        }
-        #    });
-        #});
-        #return $result;
         my $user = $app->users->search({ username => $username, password => $password })->single;
+
         if ($user) {
             my $tfa_secret = decode_base32 $user->tfa_secret;
+            my $key        = $self->decrypt($password, $user->key);
             my $correct_token = make_token_6(Authen::OATH->new->totp($tfa_secret));
             my $tfa_token = $self->session('tfa_token');
             if ($correct_token eq $tfa_token) {
-                $self->session('logged_in' => 1);
+                $self->session(logged_in => 1);
                 $self->session(password => '');
+                $self->session(key => $key);
                 return 1;
             } else {
                 $self->flash(msg => 'Invalid login', type => 'danger');

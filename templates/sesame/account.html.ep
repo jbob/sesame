@@ -1,0 +1,5 @@
+% layout 'default';
+
+<h1>Hello <%= session 'username' %></h1>
+
+%= link_to 'Change password' => 'account/changepw', class => 'btn btn-default'

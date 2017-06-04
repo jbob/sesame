@@ -35,6 +35,9 @@
            <li class="<%= 'active' if stash->{action} eq 'logins_list' %>">
                %= link_to 'My Logins' => 'logins'
            </li>
+           <li class="<%= 'active' if stash->{action} eq 'account' %>">
+               %= link_to 'My Account' => 'account'
+           </li>
            <li>
                %= link_to 'Logout' => 'logout'
            </li>

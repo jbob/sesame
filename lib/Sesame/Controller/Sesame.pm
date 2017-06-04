@@ -20,8 +20,7 @@ sub login {
     if ($username and $password and $tfa_token)  {
         $self->session(username => $username);
         $self->session(tfa_token => $tfa_token);
-        $self->session(key => sha512_hex encode('UTF-8', $username . $password));
-        $self->session(password => sha512_hex $self->session('key'));
+        $self->session(password => sha512_hex sha512_hex encode('UTF-8', $username.$password));
         return $self->redirect_to($self->session('target') // '/');
     } else {
         if ($self->req->method eq 'POST') {
@@ -34,18 +33,17 @@ sub login {
 sub logout {
     my $self = shift;
     $self->session(logged_in => 0);
-    $self->session('username' => '');
-    $self->session('password' => '');
+    $self->session(username => '');
+    $self->session(password => '');
     $self->session(key => '');
     return $self->redirect_to('/');
 }
 
 sub register {
     my $self = shift;
-    my $username = $self->param('username') // '';
+    my $username  = $self->param('username')  // '';
     my $password1 = $self->param('password1') // '';
     my $password2 = $self->param('password2') // '';
-
 
     if ($self->req->method eq 'GET') {
         return $self->render;
@@ -69,11 +67,14 @@ sub register {
         } else {
             my $password = sha512_hex sha512_hex encode('UTF-8', $username . $password1);
             my $tfa_secret = encode_base32(entropy_source->get_bits(50*8));
+            my $plain_key = encode_base32(entropy_source->get_bits(50*8));
+            my $enc_key = $self->encrypt($password, $plain_key);
             my $url = sprintf('otpauth://totp/%s?secret=%s', "Sesame-$username", $tfa_secret);
-            my $qr_url = sprintf('https://chart.googleapis.com/chart?chs=400x400&chld=M|0&cht=qr&chl=%s', uri_escape($url));
-            $self->users->create({ username => $username,
-                                   password => $password,
-                                   tfa_secret => $tfa_secret})->save(sub {
+            my $qr_url = sprintf('https://chart.googleapis.com/chart?chs=400x400&chld=M|0&cht=qr&chl=%s', uri_escape_utf8($url));
+            $self->users->create({ username   => $username,
+                                   password   => $password,
+                                   tfa_secret => $tfa_secret,
+                                   key        => $enc_key})->save(sub {
                                        my ($users, $err, $user) = @_;
                                        $self->reply->exception($err) if $err;
                                        $self->render(tfa_secret => $tfa_secret,
@@ -84,21 +85,58 @@ sub register {
     $self->render_later;
 }
 
+sub changepw {
+    my $self = shift;
+    my $old_password  = $self->param('old_password')  // '';
+    my $new_password1 = $self->param('new_password1') // '';
+    my $new_password2 = $self->param('new_password2') // '';
+
+    if ($self->req->method eq 'GET') {
+        return $self->render;
+    }
+    if (not $old_password or not $new_password1 or not $new_password2) {
+        $self->flash(msg => 'Please fill the complete form', type => 'danger');
+        return $self->redirect_to('changepw');
+    }
+    if ($new_password1 ne $new_password2) {
+        $self->flash(msg => 'Passwords do not match', type => 'danger');
+        return $self->redirect_to('changepw');
+    }
+
+    my $username = $self->session('username');
+    $old_password = sha512_hex sha512_hex encode('UTF8', $username.$old_password);
+
+    $self->users->search({ username => $username, password => $old_password })->single(sub {
+        my ($users, $err, $user) = @_;
+        $self->reply->exception($err) if $err;
+        if ($user) {
+            $user->password(sha512_hex sha512_hex encode('UTF8', $username.$new_password1));
+            $user->key($self->encrypt($user->password, $self->session('key')));
+            $user->save;
+            return $self->redirect_to('/logout');
+        } else {
+            $self->flash(msg => 'Old password is incorrect', type => 'danger');
+            return $self->redirect_to('changepw');
+        }
+
+    });
+    $self->render_later;
+}
+
 sub logins_list {
     my $self = shift;
     my $username = $self->session('username');
     my $key      = $self->session('key');
-    my $cipher   = Crypt::CBC->new( -key => $key, -cipher => 'Blowfish');
 
     $self->users->search({ username => $username })->single(sub {
         my ($users, $err, $user) = @_;
         $self->reply->exception($err) if $err;
         my $logins = $user->logins;
         for my $login(@$logins) {
-            $login->page(decode('UTF-8', $cipher->decrypt_hex($login->page)));
-            $login->login(decode('UTF-8', $cipher->decrypt_hex($login->login)));
-            $login->password(decode('UTF-8', $cipher->decrypt_hex($login->password)));
-            $login->comment(decode('UTF-8', $cipher->decrypt_hex($login->comment)));
+            $login->page(decode('UTF-8', $self->decrypt($key, $login->page)));
+            $login->login(decode('UTF-8', $self->decrypt($key, $login->login)));
+            $login->password(decode('UTF-8', $self->decrypt($key, $login->password)));
+            $login->comment(decode('UTF-8', $self->decrypt($key, $login->comment)));
         }
         $self->render(logins => $logins);
     });
@@ -109,11 +147,10 @@ sub create {
     my $self = shift;
     my $username = $self->session('username');
     my $key      = $self->session('key');
-    my $cipher   = Crypt::CBC->new( -key => $key, -cipher => 'Blowfish');
-    my $page     = $cipher->encrypt_hex($self->req->param('page') // '');
-    my $login    = $cipher->encrypt_hex($self->req->param('login') // '');
-    my $password = $cipher->encrypt_hex($self->req->param('password') // '');
-    my $comment  = $cipher->encrypt_hex($self->req->param('comment') // '');
+    my $page     = $self->encrypt($key, $self->req->param('page') // '');
+    my $login    = $self->encrypt($key, $self->req->param('login') // '');
+    my $password = $self->encrypt($key, $self->req->param('password') // '');
+    my $comment  = $self->encrypt($key, $self->req->param('comment') // '');
 
     my $newlogin = $self->logins->create({ page     => $page,
                                            login    => $login,

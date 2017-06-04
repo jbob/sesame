@@ -19,7 +19,7 @@ sub startup {
     $r->get('/')->to('sesame#index')->name('index');
     $r->any('/login')->to('sesame#login');
     $r->any('/register')->to('sesame#register');
-    $r->get('/about)')->to('sesame#about');
+    $r->get('/about')->to('sesame#about');
     my $l = $r->under(sub {
         my $self = shift;
         return $self->auth;
@@ -30,6 +30,8 @@ sub startup {
     $l->get('/logins/new')->to('sesame#form');
     $l->get('/logins/delete/:id')->to('sesame#delete');
     $l->get('/logins/:id')->to('sesame#show');
+    $l->get('/account')->to('sesame#account');
+    $l->any('/account/changepw')->to('sesame#changepw');
 }
 
 1;
