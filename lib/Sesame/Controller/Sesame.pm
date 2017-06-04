@@ -143,27 +143,71 @@ sub logins_list {
     $self->render_later;
 }
 
-sub create {
+sub upsert {
     my $self = shift;
+    my $stash = $self->stash;
     my $username = $self->session('username');
     my $key      = $self->session('key');
+    my $id       = $self->req->param('id') || $stash->{id};
     my $page     = $self->encrypt($key, $self->req->param('page') // '');
     my $login    = $self->encrypt($key, $self->req->param('login') // '');
     my $password = $self->encrypt($key, $self->req->param('password') // '');
     my $comment  = $self->encrypt($key, $self->req->param('comment') // '');
 
-    my $newlogin = $self->logins->create({ page     => $page,
-                                           login    => $login,
-                                           password => $password,
-                                           comment  => $comment });
+    if ($id) {
+        # Update existing record
+        $self->users->search({ username => $username })->single(sub {
+            my ($users, $err, $user) = @_;
+            $self->reply->exception($err) if $err;
+            $self->logins->search({'user.$id' => bson_oid($user->id), _id => bson_oid($id)})->single(sub {
+                my ($logins, $err, $l) = @_;
+                $self->reply->exception($err) if $err;
+                $l->page($page);
+                $l->login($login);
+                $l->password($password);
+                $l->comment($comment);
+                $l->save;
+                $self->redirect_to('logins');
+            });
+        });
+    } else {
+        # Create new record
+        my $newlogin = $self->logins->create({ page     => $page,
+                                               login    => $login,
+                                               password => $password,
+                                               comment  => $comment });
 
+        $self->users->search({ username => $username })->single(sub {
+            my ($users, $err, $user) = @_;
+            $self->reply->exception($err) if $err;
+            $user->add_logins($newlogin);
+            $self->redirect_to('logins');
+        });
+    }
+
+    $self->render_later;
+}
+
+sub edit {
+    my $self = shift;
+    my $stash = $self->stash;
+    my $username = $self->session('username');
+    my $key = $self->session('key');
+    my $id = $self->req->param('id') || $stash->{id};
     $self->users->search({ username => $username })->single(sub {
         my ($users, $err, $user) = @_;
         $self->reply->exception($err) if $err;
-        $user->add_logins($newlogin);
-        $self->redirect_to('logins');
+        $self->logins->search({'user.$id' => bson_oid($user->id), _id => bson_oid($id)})->single(sub {
+            my ($logins, $err, $login) = @_;
+            $self->reply->exception($err) if $err;
+            $self->stash(id       => $id);
+            $self->stash(page     => decode('UTF-8', $self->decrypt($key, $login->page)));
+            $self->stash(login    => decode('UTF_8', $self->decrypt($key, $login->password)));
+            $self->stash(password => decode('UTF-8', $self->decrypt($key, $login->password)));
+            $self->stash(comment  => decode('UTF-8', $self->decrypt($key, $login->comment)));
+            $self->render('sesame/form');
+        });
     });
-
     $self->render_later;
 }
 

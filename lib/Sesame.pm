@@ -26,9 +26,10 @@ sub startup {
     });
     $l->get('/logout')->to('sesame#logout');
     $l->get('/logins')->to('sesame#logins_list');
-    $l->post('/logins')->to('sesame#create');
+    $l->post('/logins')->to('sesame#upsert');
     $l->get('/logins/new')->to('sesame#form');
     $l->get('/logins/delete/:id')->to('sesame#delete');
+    $l->get('/logins/edit/:id')->to('sesame#edit');
     $l->get('/logins/:id')->to('sesame#show');
     $l->get('/account')->to('sesame#account');
     $l->any('/account/changepw')->to('sesame#changepw');
