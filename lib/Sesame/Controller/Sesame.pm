@@ -229,7 +229,7 @@ sub edit {
             $self->reply->exception($err) if $err;
             $self->stash(id       => $id);
             $self->stash(page     => decode('UTF-8', $self->decrypt($key, $login->page)));
-            $self->stash(login    => decode('UTF_8', $self->decrypt($key, $login->password)));
+            $self->stash(login    => decode('UTF_8', $self->decrypt($key, $login->login)));
             $self->stash(password => decode('UTF-8', $self->decrypt($key, $login->password)));
             $self->stash(comment  => decode('UTF-8', $self->decrypt($key, $login->comment)));
             $self->render('sesame/form');
